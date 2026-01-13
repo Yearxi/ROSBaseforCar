@@ -1,0 +1,19 @@
+# 机器人形状（单位：米）
+# 假设机器人是 30cm x 30cm 的正方形，中心在 [0,0]
+footprint: [[-0.15, -0.15], [-0.15, 0.15], [0.15, 0.15], [0.15, -0.15]]
+# 如果是圆形机器人，则使用: robot_radius: 0.18
+
+# 膨胀层参数（给墙壁加一层“禁区”，防止边缘碰撞）
+inflation_layer:
+  inflation_radius: 0.35 # 避障半径
+  cost_scaling_factor: 5.0 # 距离墙越近，代价上升越快
+
+# 障碍物层参数
+obstacle_layer:
+  observation_sources: scan
+  scan:
+    sensor_frame: laser # 必须和你雷达的 frame_id 一致
+    data_type: LaserScan
+    topic: /scan
+    marking: true # 是否用于标记障碍物
+    clearing: true # 是否用于清除障碍物

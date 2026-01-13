@@ -1,0 +1,33 @@
+# Slam Toolbox 核心坐标系配置
+odom_frame: odom
+base_frame: base_link
+map_frame: map
+
+# 模式设置
+mode: mapping # 运行模式：mapping（构图）, localization（定位）
+
+# 匹配与变换参数
+publish_period: 0.05        # 发布 map->odom 变换的周期 (秒)，0.05s 即 20Hz
+transform_timeout: 0.2      # 查找坐标变换的超时时间 (秒)
+tf_buffer_duration: 30.0    # TF 缓存时长
+stack_size_to_use: 40000000 # 内部计算使用的栈大小，防止复杂场景崩溃
+
+# 雷达处理参数
+max_laser_range: 12.0       # 雷达最大有效探测距离 (米)
+minimum_time_interval: 0.1  # 两次扫描处理的最小时间间隔
+use_map_saver: true         # 是否启用地图保存服务
+
+# 扫描匹配 (Scan Matching) 相关
+lookup_constraint_threshold: 0.001 
+minimum_travel_distance: 0.1       # 机器人移动超过此距离(米)才进行扫描处理
+minimum_travel_heading: 0.1        # 机器人旋转超过此弧度才进行扫描处理
+scan_buffer_size: 10               # 缓存扫描帧的数量
+scan_buffer_maximum_scan_distance: 10.0
+
+# 闭环检测 (Loop Closure) 相关
+do_loop_closing: true              # 是否启用闭环检测
+loop_search_maximum_distance: 3.0  # 闭环搜索的最大距离半径
+loop_match_minimum_chain_size: 10  # 形成闭环所需的最少连续扫描匹配数
+loop_match_maximum_variance_coarse: 3.0
+loop_match_minimum_response_coarse: 0.35
+loop_match_minimum_response_fine: 0.45

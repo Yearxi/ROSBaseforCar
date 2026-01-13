@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+    <rosparam command="load" file="$(find my_robot)/config/port.yaml" />
+
+    <include file="$(find mcu_comms)/launch/ekf_localization.launch">
+        <!-- <arg name="mcu_port" value="/mcu_port" /> -->
+    </include>
+
+    <include file="$(find ldlidar)/launch/ld14p.launch">
+        <!-- <arg name="lidar_port" value="/lidar_port" /> -->
+    </include>
+
+    <node pkg="tf" type="static_transform_publisher" name="base_to_laser" args="0 0 0.2 0 0 0 base_link laser 100" />
+</launch>

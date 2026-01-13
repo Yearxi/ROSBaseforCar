@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="ui" default="false" />
+
+    <include file="$(find my_robot)/launch/base.launch"/>
+
+    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox" output="screen">
+        <rosparam command="load" file="$(find my_robot)/config/slam.yaml" />
+    </node>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find my_robot)/rviz/slam.rviz" required="true" if="$(arg ui)" />
+
+</launch>
