@@ -21,8 +21,8 @@
 #ifndef __ROS_API_H__
 #define __ROS_API_H__
 
-#include <ros/ros.h>
-#include <sensor_msgs/LaserScan.h>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
 #include <string>
 
 struct LaserScanSetting

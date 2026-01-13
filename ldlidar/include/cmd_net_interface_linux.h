@@ -44,15 +44,12 @@ namespace asmtermios {
 
 #include <stdio.h>
 #include <netinet/in.h>
-#include <ros/ros.h>
 #include <sstream>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <poll.h>
-#include <fcntl.h>
 #include <sys/file.h>
 //#include <signal.h>
-#include <std_msgs/Int8.h>
 
 
 namespace ldlidar {
@@ -64,14 +61,13 @@ static uint16_t DIFOP_DATA_PORT_NUMBER = 2369;  // lslidar default difop data po
 class Input
 {
 public:
-  Input(ros::NodeHandle private_nh, uint16_t port);
+  Input(std::string gip,int gid,std::string dip,int did,std::string groupip_, uint16_t port);
 
   virtual ~Input()
   {
   }
 
 protected:
-  ros::NodeHandle private_nh_;
   uint16_t port_;
   std::string devip_str_;
   std::string lidar_name;
@@ -84,12 +80,13 @@ protected:
   int socket_id_difop;
   int sockfd_;
   std::string devip_str_difop;
+  int UDP_PORT_NUMBER;
 };
 
 
 class CmdNetInterfaceLinux : public Input {
  public:
-  CmdNetInterfaceLinux(ros::NodeHandle private_nh, uint16_t port = MSOP_DATA_PORT_NUMBER);
+  CmdNetInterfaceLinux(std::string gip,int gid,std::string dip,int did,std::string groupip_, uint16_t port = MSOP_DATA_PORT_NUMBER);
   ~CmdNetInterfaceLinux();
   // receive from port channel data                  
   bool ReadFromIO(uint8_t *rx_buf, uint32_t rx_buf_len, uint32_t *rx_len); 

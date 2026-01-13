@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding:UTF-8 -*-
 from __future__ import print_function
 import  serial
@@ -8,7 +8,7 @@ scan_fre = 6    #雷达扫描频率 ，可调范围2~8 ，单位:hz
 if __name__ == '__main__':
         listdata = []
         lastangle = 0
-        ser = serial.Serial('/dev/wheeltec_lidar', 230400)    # ubuntu，如果未修改串口别名，可通过 ll /dev 查看雷达具体端口再进行更改
+        ser = serial.Serial('/dev/wheeltec_laser', 230400)    # ubuntu，如果未修改串口别名，可通过 ll /dev 查看雷达具体端口再进行更改
         # ser = serial.Serial("COM5", 230400, timeout=5)     # window系统，需要先通过设备管理器确认串口COM号
         scan_flag = False
         while scan_flag==0:

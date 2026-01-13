@@ -18,7 +18,6 @@
  */
 
 #include "cmd_net_interface_linux.h"
-#include <errno.h>
 
 
 bool flag = 1;
@@ -28,28 +27,24 @@ namespace ldlidar {
 
 static const size_t packet_size_input = 400;
 
-Input::Input(ros::NodeHandle private_nh, uint16_t port) : private_nh_(private_nh)
+Input::Input(std::string gip,int gid,std::string dip,int did,std::string groupip_, uint16_t port) 
 {
     npkt_update_flag_ = false;
     cur_rpm_ = 0;
     return_mode_ = 1;
-    private_nh.param("device_ip", devip_str_, std::string("192.168.1.200"));
-    private_nh.param("lidar_name", lidar_name, std::string("M10"));
-    private_nh.param("device_ip_difop", devip_str_difop, std::string("192.168.1.102"));
-    private_nh.param<bool>("add_multicast", add_multicast, false);
-    private_nh.param<std::string>("group_ip", group_ip, "224.1.1.2");
-    private_nh.param<int>("difop_port", UDP_PORT_NUMBER_DIFOP, 2369);
-    int sid = 2368 ;
-    private_nh.param<int>("device_port", sid, 2368);
-    port_ = sid;
-
+    port_=(port);
+    devip_str_=(gip);
+    devip_str_difop=(gid);
+    devip_str_difop=(dip);
+    UDP_PORT_NUMBER=(did);
+    group_ip=(groupip_);
     if (!devip_str_.empty())
-        ROS_INFO_STREAM("Only accepting packets from IP address: " << devip_str_);
+        std::cout<<"Only accepting packets from IP address: " << devip_str_<<std::endl;
 }
 
 
-CmdNetInterfaceLinux::CmdNetInterfaceLinux(ros::NodeHandle private_nh, uint16_t port)
-    : Input(private_nh, port), rx_thread_(nullptr), rx_count_(0), read_callback_(nullptr) 
+CmdNetInterfaceLinux::CmdNetInterfaceLinux(std::string gip,int gid,std::string dip,int did,std::string groupip_,  uint16_t port)
+    : Input(gip,gid , dip,did ,groupip_ , port), rx_thread_(nullptr), rx_count_(0), read_callback_(nullptr) 
 {
         sockfd_ = -1;
         if (!devip_str_.empty())
@@ -57,11 +52,11 @@ CmdNetInterfaceLinux::CmdNetInterfaceLinux(ros::NodeHandle private_nh, uint16_t 
             inet_aton(devip_str_.c_str(), &devip_);
             inet_aton(devip_str_difop.c_str(), &devip_difop);
         }
-        ROS_INFO_STREAM("Opening UDP socket: port " << port);
+        std::cout<<"Opening UDP socket: port " << port<<std::endl;
         sockfd_ = socket(PF_INET, SOCK_DGRAM, 0);
         if (sockfd_ == -1)
         {
-            printf("socket"); // TODO: ROS_ERROR errno
+            printf("socket"); // TODO: RCLCPP_ERROR errno
             return;
         }
         int opt = 1;
@@ -79,7 +74,7 @@ CmdNetInterfaceLinux::CmdNetInterfaceLinux(ros::NodeHandle private_nh, uint16_t 
 
         if (bind(sockfd_, (sockaddr *)&my_addr, sizeof(sockaddr)) == -1)
         {
-            printf("bind"); // TODO: ROS_ERROR errno
+            printf("bind"); // TODO: RCLCPP_ERROR errno
             return;
         }
         if (add_multicast)
@@ -117,7 +112,7 @@ CmdNetInterfaceLinux::~CmdNetInterfaceLinux() { (void)close(sockfd_); }
 
 bool CmdNetInterfaceLinux::ReadFromIO(uint8_t *rx_buf, uint32_t rx_buf_len,
                                    uint32_t *rx_len) {
-        double time1 = ros::Time::now().toSec();
+        //double time1 = RCLCPP::Time::now().toSec();
         int q = 0;
         struct pollfd fds[1];
         fds[0].fd = sockfd_;
@@ -136,17 +131,17 @@ bool CmdNetInterfaceLinux::ReadFromIO(uint8_t *rx_buf, uint32_t rx_buf_len,
                 if (retval < 0) // poll() error?
                 {
                     if (errno != EINTR)
-                        ROS_ERROR("poll() error: %s", strerror(errno));
+                        printf( "poll() error: %s", strerror(errno));
                     return 0;
                 }
                 if (retval == 0) // poll() timeout?
                 {
-                    ROS_WARN("lslidar poll() timeout");
+                    printf("lslidar poll() timeout");
                     return 0;
                 }
                 if ((fds[0].revents & POLLERR) || (fds[0].revents & POLLHUP) || (fds[0].revents & POLLNVAL)) // device error?
                 {
-                    ROS_ERROR("poll() reports lslidar error");
+                    printf("poll() reports lslidar error");
                     return 0;
                 }
             } while ((fds[0].revents & POLLIN) == 0);
@@ -155,7 +150,7 @@ bool CmdNetInterfaceLinux::ReadFromIO(uint8_t *rx_buf, uint32_t rx_buf_len,
             // socket using a blocking read.
             ssize_t nbytes = recvfrom(sockfd_, rx_buf, rx_buf_len, 0,
                                       (sockaddr *)&sender_address, &sender_address_len);
-            //        ROS_DEBUG_STREAM("incomplete lslidar packet read: "
+            //        RCLCPP_DEBUG_STREAM("incomplete lslidar packet read: "
             //                         << nbytes << " bytes");
             q = (int)nbytes;
             if (nbytes < 0)
@@ -163,7 +158,7 @@ bool CmdNetInterfaceLinux::ReadFromIO(uint8_t *rx_buf, uint32_t rx_buf_len,
                 if (errno != EWOULDBLOCK)
                 {
                     perror("recvfail");
-                    ROS_INFO("recvfail");
+                    printf("recvfail");
                     return 1;
                 }
             }
@@ -188,8 +183,8 @@ bool CmdNetInterfaceLinux::ReadFromIO(uint8_t *rx_buf, uint32_t rx_buf_len,
 
         // Average the times at which we begin and end reading.  Use that to
         // estimate when the scan occurred.
-        double time2 = ros::Time::now().toSec();
-        // packet->stamp = ros::Time((time2 + time1) / 2.0);
+        //double time2 = RCLCPP::Time::now().toSec();
+        // packet->stamp = RCLCPP::Time((time2 + time1) / 2.0);
         // packet->stamp = this->timeStamp;
         //for(int i=0;i<rx_buf_len;i++)printHexData(rx_buf[i]);
         *rx_len = q;
