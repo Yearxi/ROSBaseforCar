@@ -4,7 +4,7 @@
  <node name="ldlidar_publisher_ld14p" pkg="ldlidar" type="ldlidar" output="screen">
   <param name="product_name" value="LDLiDAR_LD14P"/>
   <param name="topic_name" value="scan"/>
-  <param name="port_name" value ="/dev/wheeltec_lidar"/>
+  <param name="port_name" value ="/dev/serial/by-id/usb-1a86_USB_Single_Serial_58EB004873-if00"/>
   <param name="frame_id" value="laser"/>
 
   <!--乐动LD-14雷达参数-->
