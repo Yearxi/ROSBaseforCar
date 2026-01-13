@@ -127,15 +127,38 @@ private:
         int16_t vy_raw = (data[3] << 8) | data[4];
         int16_t vz_raw = (data[5] << 8) | data[6];
 
+        int16_t ax_raw = (data[7] << 8) | data[8];     // X加速度 (原始值)
+        int16_t ay_raw = (data[9] << 8) | data[10];    // Y加速度 (原始值)
+        int16_t az_raw = 0;
+
+        int16_t gx_raw = (data[13] << 8) | data[14];   
+        int16_t gy_raw = (data[15] << 8) | data[16];   
+        int16_t gz_raw = (data[17] << 8) | data[18];   
+
+        uint8_t goal_cmd = data[19]; 
+
+
         double vx = vx_raw / 1000.0;
         double vy = vy_raw / 1000.0;
         double vth = vz_raw / 1000.0;
-
+    
         double delta_x = (vx * cos(th_) - vy * sin(th_)) * dt;
         double delta_y = (vx * sin(th_) + vy * cos(th_)) * dt;
         double delta_th = vth * dt;
 
         x_ += delta_x; y_ += delta_y; th_ += delta_th;
+
+        const double ACCEL_SCALE = 16384.0;     // 对应±2g: 32768/2 = 16384 LSB/g
+        const double GYRO_SCALE = 131.0;         // 加速度转换 (原始值 → m/s²)
+        
+        double ax = (ax_raw / ACCEL_SCALE) * 9.80665;  // g → m/s²
+        double ay = (ay_raw / ACCEL_SCALE) * 9.80665;
+        double az = (az_raw / ACCEL_SCALE) * 9.80665;
+        
+        // 陀螺仪转换 (原始值 → rad/s)
+        double wx = (gx_raw / GYRO_SCALE) * (M_PI / 180.0);  // °/s → rad/s
+        double wy = (gy_raw / GYRO_SCALE) * (M_PI / 180.0);
+        double wz = (gz_raw / GYRO_SCALE) * (M_PI / 180.0);
 
         nav_msgs::Odometry odom;
         odom.header.stamp = current_time;
@@ -152,17 +175,16 @@ private:
         sensor_msgs::Imu imu_msg;
         imu_msg.header.stamp = current_time;
         imu_msg.header.frame_id = "imu_link";
-        int16_t ax = (data[7] << 8) | data[8];
-        int16_t ay = (data[9] << 8) | data[10];
-        int16_t az = (data[11] << 8) | data[12];
         imu_msg.linear_acceleration.x = (ax / 16384.0) * 9.81;
         imu_msg.linear_acceleration.y = (ay / 16384.0) * 9.81;
         imu_msg.linear_acceleration.z = (az / 16384.0) * 9.81;
-        imu_msg.orientation.w = 1.0;
+        imu_msg.angular_velocity.x = wx;
+        imu_msg.angular_velocity.y = wy;
+        imu_msg.angular_velocity.z = wz;        
+        imu_msg.orientation = tf::createQuaternionMsgFromYaw(th_);
         imu_pub.publish(imu_msg);
 
         // 处理导航指令
-        uint8_t goal_cmd = data[19]; 
         sendNavGoal(goal_cmd);
         if (goal_cmd == 0x00) last_goal_cmd_ = 0x00; // 按钮松开重置状态
         
