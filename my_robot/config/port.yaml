@@ -1,2 +1,0 @@
-lidar_port: "/dev/serial/by-id/usb-1a86_USB_Single_Serial_58EB004873-if00"
-mcu_port: "/dev/serial/by-id/usb-1a86_USB_Single_Serial_5B0B027572-if00"

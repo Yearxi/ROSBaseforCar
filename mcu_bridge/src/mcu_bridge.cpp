@@ -5,7 +5,7 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <tf2/LinearMath/Quaternion.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 class MCUBridge : public rclcpp::Node {
 public:
@@ -35,7 +35,7 @@ public:
         
         imu_pub_ = this->create_publisher<sensor_msgs::msg::Imu>("imu/data_raw", 10);
         odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("wheel_odom", 10);
-        goal_pub_ = this->create_publisher<geometry_msgs::msg::Pose_stamped>("/move_base_simple/goal", 10);
+        goal_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("/move_base_simple/goal", 10);
         
         last_time_ = this->now();
         
