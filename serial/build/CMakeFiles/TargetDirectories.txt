@@ -1,0 +1,10 @@
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/install/local.dir
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/install.dir
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/list_install_components.dir
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/rebuild_cache.dir
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/edit_cache.dir
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/test.dir
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/install/strip.dir
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/serial.dir
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/serial_uninstall.dir
+/home/yeley/manicar_ws/src/serial/build/CMakeFiles/uninstall.dir
